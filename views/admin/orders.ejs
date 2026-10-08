@@ -1,0 +1,15 @@
+<%- include('_head') %>
+<form class="card" method="get"><div class="row4" style="align-items:end">
+  <div class="fg" style="margin:0"><label>Search</label><input class="in" name="q" value="<%= query.q||'' %>" placeholder="Order #, name, phone, AWB…"></div>
+  <div class="fg" style="margin:0"><label>Status</label><select class="in" name="status"><option value="">Any</option><% STATUSES.forEach(s => { %><option <%= query.status===s?'selected':'' %>><%= s %></option><% }) %></select></div>
+  <div class="fg" style="margin:0"><label>Payment</label><select class="in" name="payment"><option value="">Any</option><% ['pending','paid','failed'].forEach(s => { %><option <%= query.payment===s?'selected':'' %>><%= s %></option><% }) %></select></div>
+  <div class="fg" style="margin:0"><label>Method</label><select class="in" name="method"><option value="">Any</option><option <%= query.method==='cod'?'selected':'' %>>cod</option><option <%= query.method==='online'?'selected':'' %>>online</option></select></div>
+</div><div class="row4" style="align-items:end;margin-top:.7rem"><div class="fg" style="margin:0"><label>From</label><input class="in" type="date" name="from" value="<%= query.from||'' %>"></div><div class="fg" style="margin:0"><label>To</label><input class="in" type="date" name="to" value="<%= query.to||'' %>"></div>
+<div class="acts"><button class="btn">Filter</button><a class="btn sec" href="/admin/orders">Reset</a></div><div class="acts" style="justify-content:flex-end"><a class="btn sec" href="/admin/orders/export.csv?<%= new URLSearchParams(query).toString() %>">⬇ CSV</a></div></div></form>
+<div class="card"><p class="muted" style="margin-bottom:.6rem"><%= total.n %> orders · <b><%= L.money(total.s) %></b></p>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Payment</th><th>Status</th><th>AWB</th><th></th></tr></thead><tbody>
+<% rows.forEach(o => { %><tr><td><a href="/admin/orders/<%= o.id %>" style="color:#1a1f5e;font-weight:800"><%= o.order_number %></a><br><small class="muted"><%= L.fmtDate(o.created_at) %></small></td><td><%= o.name %><br><small class="muted"><%= o.phone %> · <%= o.city %></small></td>
+<td><b><%= L.money(o.total) %></b></td><td><span class="pill <%= o.payment_status %>"><%= o.payment_method %> · <%= o.payment_status %></span></td><td><span class="pill <%= o.order_status %>"><%= o.order_status %></span></td><td><small><%= o.awb||'—' %></small></td><td><a class="btn sec sm" href="/admin/orders/<%= o.id %>">Open</a></td></tr><% }) %>
+<% if (!rows.length) { %><tr><td colspan="8" class="muted" style="text-align:center;padding:2rem">No orders match.</td></tr><% } %></tbody></table></div>
+<%- include('../partials/pagination') %></div>
+<%- include('_foot') %>

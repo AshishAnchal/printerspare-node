@@ -1,0 +1,5 @@
+<% const bgc = cfg.bg==='light'?'alt':cfg.bg==='dark'?'dark':''; if (sec.products.length) { %>
+<section class="section <%= bgc %>"><div class="container">
+  <div class="section-head"><div class="section-title"><%= cfg.heading || sec.title %></div><% if (cfg.link_url) { %><a class="section-link" href="<%= cfg.link_url %>"><%= cfg.link_label || 'View all' %></a><% } %></div>
+  <div class="<%= cfg.layout==='scroll' ? 'products-scroll' : 'products-grid' %>"><% sec.products.forEach(p => { %><%- include('../product-card', {p}) %><% }) %></div>
+</div></section><% } %>

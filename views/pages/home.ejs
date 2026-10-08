@@ -1,0 +1,3 @@
+<%- include('../partials/header') %>
+<% sections.forEach(sec => { %><%- include('../partials/home/' + sec.type, { sec, cfg: sec.cfg }) %><% }) %>
+<%- include('../partials/footer') %>

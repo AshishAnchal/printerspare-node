@@ -1,0 +1,29 @@
+<%- include('../partials/header') %>
+<div class="container py-4">
+  <nav class="breadcrumb"><a href="/">Home</a>›<a href="/products">Products</a><% if (catRow) { %>›<span><%= catRow.name %></span><% } %></nav>
+  <div class="shop-layout">
+    <aside class="filter-box">
+      <h4>Categories</h4>
+      <a class="fopt <%= !category?'active':'' %>" href="/products">All products</a>
+      <% cats.forEach(c => { %><a class="fopt <%= category===c.slug?'active':'' %>" href="/products?category=<%= c.slug %>"><span><%= c.name %></span><small><%= c.n %></small></a><% }) %>
+      <% if (brands.length) { %><h4>Brands</h4><% brands.forEach(b => { %><a class="fopt <%= brand===b.brand?'active':'' %>" href="/products?brand=<%= encodeURIComponent(b.brand) %>"><span><%= b.brand %></span><small><%= b.n %></small></a><% }) %><% } %>
+      <h4>Price</h4>
+      <form method="get" action="/products">
+        <% ['search','category','brand','sort'].forEach(k => { if (query[k]) { %><input type="hidden" name="<%= k %>" value="<%= query[k] %>"><% } }) %>
+        <div class="price-filter"><input type="number" name="min" min="0" placeholder="Min" value="<%= min %>"><input type="number" name="max" min="0" placeholder="Max" value="<%= max %>"></div>
+        <label class="fopt" style="margin-top:.5rem;cursor:pointer"><span><input type="checkbox" name="stock" value="1" <%= query.stock==='1'?'checked':'' %>> In stock only</span></label>
+        <button class="btn btn-navy btn-sm w-full" style="margin-top:.5rem">Apply</button>
+      </form>
+    </aside>
+    <section>
+      <div class="toolbar"><h1><%= heading %> <small class="muted" style="font-size:.85rem;font-weight:600">(<%= total %> item<%= total===1?'':'s' %>)</small></h1>
+        <form method="get" action="/products"><% ['search','category','brand','min','max','stock'].forEach(k => { if (query[k]) { %><input type="hidden" name="<%= k %>" value="<%= query[k] %>"><% } }) %>
+        <select class="sort-sel" name="sort" onchange="this.form.submit()"><% Object.entries({newest:'Newest',featured:'Featured',popular:'Most viewed',price_low:'Price: Low → High',price_high:'Price: High → Low',sale:'Biggest discount',name:'Name A–Z'}).forEach(([k,v]) => { %><option value="<%= k %>" <%= sort===k?'selected':'' %>><%= v %></option><% }) %></select></form>
+      </div>
+      <% if (search||brand||min||max) { %><div class="chips"><% if (search) { %><span class="chip">“<%= search %>”<a href="/products?<%= new URLSearchParams({...query, search:'', page:''}).toString() %>">×</a></span><% } %><% if (brand) { %><span class="chip">Brand: <%= brand %><a href="/products?<%= new URLSearchParams({...query, brand:'', page:''}).toString() %>">×</a></span><% } %><% if (min||max) { %><span class="chip">Price <%= min||0 %>–<%= max||'∞' %><a href="/products?<%= new URLSearchParams({...query, min:'', max:'', page:''}).toString() %>">×</a></span><% } %></div><% } %>
+      <% if (!products.length) { %><div class="empty"><div class="big">🔍</div><h2>No products found</h2><p class="muted" style="margin:.4rem 0 1rem">Can't find your part? Tell us your printer model and we'll source it.</p><a class="btn btn-red" href="/enquiry">Find My Part</a></div>
+      <% } else { %><div class="products-grid"><% products.forEach(p => { %><%- include('../partials/product-card', {p}) %><% }) %></div><%- include('../partials/pagination') %><% } %>
+    </section>
+  </div>
+</div>
+<%- include('../partials/footer') %>

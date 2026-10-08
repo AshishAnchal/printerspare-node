@@ -1,0 +1,28 @@
+<%
+const _ep = L.effectivePrice(p), _disc = _ep < p.price, _pct = L.discountPct(p.price, _ep);
+const _wa = encodeURIComponent('I want to order: ' + p.name + ' - Please share details.');
+const _hasVar = p.has_variants > 0;
+%>
+<div class="pcard">
+  <% if (_disc && S.show_sale_badge) { %><span class="save-badge">Save <%= _pct %>%</span><% } %>
+  <% if (p.badge) { %><span class="badge-tag"><%= p.badge %></span><% } %>
+  <div class="pcard-actions">
+    <% if (S.show_wishlist) { %><button class="pact" data-wish="<%= p.id %>" title="Wishlist" aria-label="Add to wishlist">❤️</button><% } %>
+    <a class="pact" href="/product/<%= p.slug %>" title="View" aria-label="View">👁️</a>
+    <a class="pact" href="https://wa.me/<%= String(S.whatsapp).replace(/\D/g,'') %>?text=<%= _wa %>" target="_blank" rel="noopener" title="WhatsApp" aria-label="WhatsApp">💬</a>
+  </div>
+  <a href="/product/<%= p.slug %>" class="pimg"><% if (p.image) { %><img src="/uploads/<%= p.image %>" alt="<%= p.name %>" loading="lazy"><% } else { %><span class="ph">🖨️</span><% } %></a>
+  <div class="pinfo">
+    <% if (S.show_brand_on_card) { %><div class="pbrand"><%= p.brand || p.cat_name || '' %></div><% } %>
+    <a class="pname" href="/product/<%= p.slug %>"><%= p.name %></a>
+    <% if (S.show_ratings && p.review_count > 0) { %><div><%- include('stars', {rating: p.rating_avg}) %><span class="rcount">(<%= p.review_count %>)</span></div><% } %>
+    <div class="pprice"><% if (_hasVar) { %><span class="rcount" style="margin:0">From</span><% } %><span class="price-new"><%= L.money(p.min_price != null ? p.min_price : _ep) %></span><% if (_disc && !_hasVar) { %><span class="price-old"><%= L.money(p.price) %></span><% } %></div>
+  </div>
+  <div class="pfoot">
+    <% if (p.stock > 0 || (_hasVar && p.var_stock > 0)) { %>
+      <% if (_hasVar) { %><a class="btn-add" style="text-align:center" href="/product/<%= p.slug %>">Choose option</a>
+      <% } else { %><form method="post" action="/cart/add"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="product_id" value="<%= p.id %>"><input type="hidden" name="qty" value="1"><button class="btn-add" data-added="✅ Added!"><%= S.label_add_to_cart %></button></form><% } %>
+      <a class="btn-buy" href="/product/<%= p.slug %>">Buy Now</a>
+    <% } else { %><button class="btn-add" disabled style="flex:1">Out of Stock</button><% } %>
+  </div>
+</div>

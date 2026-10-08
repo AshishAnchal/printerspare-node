@@ -1,0 +1,4 @@
+<%- include('_head') %>
+<div class="toolbar"><b><%= rows.length %> subscribers</b><div class="sp"></div><a class="btn sec" href="/admin/subscribers/export.csv">⬇ CSV</a></div>
+<div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Email</th><th>Joined</th><th></th></tr></thead><tbody><% rows.forEach(s => { %><tr><td><%= s.email %></td><td><%= L.fmtDate(s.created_at) %></td><td><form method="post" action="/admin/subscribers/<%= s.id %>/delete" data-confirm="Remove?"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn red sm">🗑</button></form></td></tr><% }) %><% if (!rows.length) { %><tr><td colspan="3" class="muted" style="text-align:center;padding:2rem">No subscribers yet.</td></tr><% } %></tbody></table></div></div>
+<%- include('_foot') %>

@@ -1,0 +1,5 @@
+<section class="promo-banner" style="background:<%= L.safeBg(cfg.bg) || 'var(--primary)' %>;color:<%= L.isColor(cfg.color)?cfg.color:'#fff' %>"><div class="container">
+  <h2 style="font-size:clamp(1.5rem,3.4vw,2.3rem);font-weight:900;margin-bottom:.5rem"><%= cfg.heading %></h2>
+  <% if (cfg.text) { %><p style="opacity:.9;margin-bottom:1.1rem"><%= cfg.text %></p><% } %>
+  <% if (cfg.btn1_label) { %><a class="btn btn-yellow btn-lg" href="<%= cfg.btn1_url||'/products' %>"><%= cfg.btn1_label %></a><% } %>
+</div></section>

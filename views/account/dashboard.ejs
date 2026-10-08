@@ -1,0 +1,9 @@
+<%- include('../partials/header') %>
+<div class="container py-4"><div class="dash"><%- include('../partials/account-nav') %><section>
+  <h1 style="font-size:1.4rem;font-weight:900;margin-bottom:1rem">Hello, <%= user.name.split(' ')[0] %> 👋</h1>
+  <div class="info-grid"><div class="info"><label>Orders</label><span style="font-size:1.5rem"><%= stats.n %></span></div><div class="info"><label>In progress</label><span style="font-size:1.5rem"><%= stats.open || 0 %></span></div><div class="info"><label>Total spent</label><span style="font-size:1.5rem"><%= L.money0(stats.spent) %></span></div></div>
+  <h2 style="font-size:1.1rem;margin:1.2rem 0 .6rem">Recent orders</h2>
+  <% if (!recent.length) { %><div class="empty"><p class="muted">No orders yet.</p><a class="btn btn-navy" style="margin-top:.8rem" href="/products">Start shopping</a></div><% } else { %>
+  <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Order</th><th>Date</th><th>Total</th><th>Status</th><th></th></tr></thead><tbody><% recent.forEach(o => { %><tr><td><b><%= o.order_number %></b></td><td><%= L.fmtDay(o.created_at) %></td><td><%= L.money(o.total) %></td><td><span class="status <%= o.order_status %>"><%= o.order_status %></span></td><td><a style="color:var(--primary);font-weight:700" href="/account/orders/<%= o.order_number %>">View</a></td></tr><% }) %></tbody></table></div><% } %>
+</section></div></div>
+<%- include('../partials/footer') %>

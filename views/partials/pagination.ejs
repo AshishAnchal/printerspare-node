@@ -1,0 +1,6 @@
+<% if (pager.pages > 1) { const qs = (n) => '?' + new URLSearchParams({...query, page: n}).toString(); %>
+<div class="pagination">
+  <% if (pager.current > 1) { %><a class="page-link" href="<%= qs(pager.current-1) %>">‹</a><% } %>
+  <% for (let i=1;i<=pager.pages;i++) { if (i===1||i===pager.pages||Math.abs(i-pager.current)<=2) { %><a class="page-link <%= i===pager.current?'active':'' %>" href="<%= qs(i) %>"><%= i %></a><% } else if (Math.abs(i-pager.current)===3) { %><span class="page-link" style="border:0">…</span><% } } %>
+  <% if (pager.current < pager.pages) { %><a class="page-link" href="<%= qs(pager.current+1) %>">›</a><% } %>
+</div><% } %>

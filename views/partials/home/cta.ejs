@@ -1,0 +1,8 @@
+<% const wa = 'https://wa.me/' + String(S.whatsapp).replace(/\D/g,''); %>
+<section class="cta-band"><div class="container cta-inner">
+  <div><h2 style="font-size:1.65rem;font-weight:900;margin-bottom:.4rem"><%= cfg.heading %></h2><p style="opacity:.85"><%= cfg.text %></p></div>
+  <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+    <% if (cfg.btn1_label) { %><a class="btn btn-yellow btn-xl" href="<%= cfg.btn1_url==='whatsapp'?wa:cfg.btn1_url %>"><%= cfg.btn1_label %></a><% } %>
+    <% if (cfg.btn2_label) { %><a class="btn btn-whatsapp btn-xl" target="_blank" rel="noopener" href="<%= cfg.btn2_url==='whatsapp'?wa:cfg.btn2_url %>"><%= cfg.btn2_label %></a><% } %>
+  </div>
+</div></section>

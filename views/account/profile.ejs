@@ -1,0 +1,9 @@
+<%- include('../partials/header') %>
+<div class="container py-4"><div class="dash"><%- include('../partials/account-nav') %><section><form method="post" action="/account/profile"><input type="hidden" name="_csrf" value="<%= csrf %>">
+<div class="form-card"><h2>My details</h2><div class="form-row"><div class="form-group"><label>Name</label><input class="form-input" name="name" value="<%= u.name %>" required></div><div class="form-group"><label>Phone</label><input class="form-input" name="phone" value="<%= u.phone||'' %>"></div></div>
+<div class="form-group"><label>Address</label><textarea class="form-ta" name="address" style="min-height:70px"><%= u.address||'' %></textarea></div>
+<div class="form-row"><div class="form-group"><label>City</label><input class="form-input" name="city" value="<%= u.city||'' %>"></div><div class="form-group"><label>State</label><select class="form-select" name="state"><option value="">Select</option><% Object.values(L.STATES).forEach(s => { %><option <%= u.state===s?'selected':'' %>><%= s %></option><% }) %></select></div></div>
+<div class="form-group" style="max-width:240px"><label>Pincode</label><input class="form-input" name="pincode" maxlength="6" value="<%= u.pincode||'' %>"></div></div>
+<div class="form-card"><h2>Change password</h2><div class="form-row"><div class="form-group"><label>Current password</label><input class="form-input" type="password" name="current_password" autocomplete="current-password"></div><div class="form-group"><label>New password</label><input class="form-input" type="password" name="new_password" minlength="6" autocomplete="new-password"></div></div><p class="muted" style="font-size:.8rem">Leave blank to keep your current password.</p></div>
+<button class="btn btn-navy btn-lg">Save changes</button></form></section></div></div>
+<%- include('../partials/footer') %>

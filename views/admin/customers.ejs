@@ -1,0 +1,6 @@
+<%- include('_head') %>
+<form class="toolbar" method="get"><input class="in" style="max-width:300px" name="q" value="<%= q %>" placeholder="Search name, email, phone"><button class="btn">Search</button><div class="sp"></div><a class="btn sec" href="/admin/customers/export.csv">⬇ CSV</a></form>
+<div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>City</th><th>Orders</th><th>Spent</th><th>Joined</th></tr></thead><tbody>
+<% rows.forEach(u => { %><tr><td><b><%= u.name %></b></td><td><%= u.email %></td><td><%= u.phone %></td><td><%= u.city %></td><td><%= u.orders %></td><td><%= L.money(u.spent) %></td><td><%= L.fmtDay(u.created_at) %></td></tr><% }) %>
+<% if (!rows.length) { %><tr><td colspan="7" class="muted" style="text-align:center;padding:2rem">No customers yet.</td></tr><% } %></tbody></table></div></div>
+<%- include('_foot') %>

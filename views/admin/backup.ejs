@@ -1,0 +1,4 @@
+<%- include('_head') %>
+<div class="card" style="max-width:640px"><h2>💾 Backup</h2><p class="muted" style="margin-bottom:1rem">Everything — products, orders, customers, settings, homepage layout — lives in one SQLite file (<%= (size/1024).toFixed(0) %> KB). Download it regularly. Uploaded images are in the <code>data/uploads</code> folder; back that folder up too.</p><a class="btn" href="/admin/backup/db">⬇ Download database backup</a>
+<p class="help" style="margin-top:1rem">To restore: stop the app, replace <code>data/store.db</code> with the backup file, start again.</p></div>
+<%- include('_foot') %>

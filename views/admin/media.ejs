@@ -1,0 +1,6 @@
+<%- include('_head') %>
+<form class="card" method="post" action="/admin/media/upload?_csrf=<%= csrf %>" enctype="multipart/form-data"><h2>Upload images</h2><div class="acts"><input class="in" style="max-width:420px" type="file" name="files" accept="image/*" multiple required><button class="btn">⬆ Upload</button></div><small class="help">Files you upload here can be used as hero-slide images, brand logos, etc. Max 5 MB each.</small></form>
+<div class="card"><h2><%= files.length %> files</h2><div class="media-grid">
+<% files.forEach(f => { %><div class="media-item"><img src="/uploads/<%= f.file %>" loading="lazy" alt=""><div><b><%= f.file %></b><br><%= (f.size/1024).toFixed(0) %> KB · <span class="pill <%= f.used?'on':'pending' %>"><%= f.used?'in use':'unused' %></span>
+<form method="post" action="/admin/media/delete" data-confirm="Delete this file<%= f.used?' (it is currently in use!)':'' %>?" style="margin-top:.3rem"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="file" value="<%= f.file %>"><button class="btn red sm">🗑</button></form></div></div><% }) %></div></div>
+<%- include('_foot') %>

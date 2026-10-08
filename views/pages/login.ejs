@@ -1,0 +1,13 @@
+<%- include('../partials/header') %>
+<div class="container"><div class="auth form-card">
+  <h1 style="font-size:1.5rem;font-weight:900;margin-bottom:.2rem"><%= mode==='login' ? 'Welcome back' : 'Create your account' %></h1>
+  <p class="muted" style="margin-bottom:1.1rem"><%= mode==='login' ? 'Log in to track orders and check out faster.' : 'Save your details for quicker checkout.' %></p>
+  <form method="post" action="/<%= mode %>"><input type="hidden" name="_csrf" value="<%= csrf %>">
+    <% if (mode==='register') { %><div class="form-group"><label>Full name</label><input class="form-input" name="name" required value="<%= form.name||'' %>"></div><div class="form-group"><label>Phone</label><input class="form-input" name="phone" value="<%= form.phone||'' %>"></div><% } %>
+    <div class="form-group"><label>Email</label><input class="form-input" type="email" name="email" required value="<%= form.email||'' %>"></div>
+    <div class="form-group"><label>Password</label><input class="form-input" type="password" name="password" required minlength="<%= mode==='register'?6:1 %>"></div>
+    <% if (mode==='register') { %><div class="form-group"><label>Confirm password</label><input class="form-input" type="password" name="password2" required></div><% } %>
+    <button class="btn btn-navy btn-lg w-full"><%= mode==='login' ? 'Log in' : 'Create account' %></button></form>
+  <p style="margin-top:1rem;text-align:center;font-size:.9rem"><%= mode==='login' ? 'New here?' : 'Already registered?' %> <a style="color:var(--primary);font-weight:800" href="/<%= mode==='login'?'register':'login' %>"><%= mode==='login' ? 'Create an account' : 'Log in' %></a></p>
+</div></div>
+<%- include('../partials/footer') %>

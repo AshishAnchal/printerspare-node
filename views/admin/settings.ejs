@@ -1,0 +1,25 @@
+<%- include('_head') %>
+<% const all = SCHEMA.filter(f => GROUPS.some(g => g.id===f.group)).map(f => f.key).join(','); %>
+<form method="post" action="/admin/settings?_csrf=<%= csrf %>" enctype="multipart/form-data"><input type="hidden" name="_fields" value="<%= all %>">
+<div class="toolbar"><div class="tabs" data-tabs style="flex:1;margin:0"><% GROUPS.forEach(g => { %><button type="button" data-tab="g-<%= g.id %>"><%= g.icon %> <%= g.label %></button><% }) %></div><button class="btn">💾 Save settings</button></div>
+<% GROUPS.forEach(g => { const fs = SCHEMA.filter(f => f.group===g.id); %>
+<div class="pane" id="g-<%= g.id %>"><div class="card"><h2><%= g.icon %> <%= g.label %></h2>
+ <% if (g.id==='payments') { %><div class="flash info">Get keys from your Razorpay dashboard → Settings → API Keys. Use <b>rzp_test_…</b> keys first. Online payment appears at checkout only when both keys are filled.</div><% } %>
+ <div class="row2">
+ <% fs.forEach(f => { const v = vals[f.key]; %>
+  <div class="fg" style="<%= (f.type==='textarea'||f.type==='html') ? 'grid-column:1/-1' : '' %>">
+  <% if (f.type==='bool') { %><label class="chk" style="margin-top:1.3rem"><input type="checkbox" name="<%= f.key %>" <%= v?'checked':'' %>> <%= f.label %></label>
+  <% } else { %><label><%= f.label %></label>
+   <% if (f.type==='select') { %><select class="in" name="<%= f.key %>"><% Object.entries(f.options).forEach(([k,l]) => { %><option value="<%= k %>" <%= String(v)===String(k)?'selected':'' %>><%= l %></option><% }) %></select>
+   <% } else if (f.type==='textarea') { %><textarea class="in" name="<%= f.key %>"><%= v %></textarea>
+   <% } else if (f.type==='html') { %><textarea class="in code" name="<%= f.key %>" spellcheck="false"><%= v %></textarea>
+   <% } else if (f.type==='color') { %><div class="colorfield"><input type="color" value="<%= v %>"><input class="in" type="text" name="<%= f.key %>" value="<%= v %>"></div>
+   <% } else if (f.type==='image') { %><% if (v) { %><img class="imgprev" src="/uploads/misc/<%= v %>" alt=""><br><label class="chk"><input type="checkbox" name="remove_<%= f.key %>"> Remove</label><% } %><input class="in" type="file" name="<%= f.key %>" accept="image/*">
+   <% } else if (f.type==='password') { %><input class="in" type="password" name="<%= f.key %>" autocomplete="new-password" placeholder="<%= secrets[f.key] ? '•••••••• (saved — type to replace)' : 'not set' %>"><% if (secrets[f.key]) { %><label class="chk" style="margin-top:.3rem;font-weight:500"><input type="checkbox" name="clear_<%= f.key %>"> Clear saved value</label><% } %>
+   <% } else { %><input class="in" type="<%= f.type==='number'?'number':'text' %>" <%= f.type==='number' ? 'step="'+(f.step||'any')+'"' : '' %> name="<%= f.key %>" value="<%= v %>"><% } %>
+   <% if (f.help) { %><small><%= f.help %></small><% } %><% } %></div>
+ <% }) %></div></div>
+</div><% }) %>
+</form>
+<form method="post" action="/admin/settings/test-email" class="card" style="max-width:520px"><input type="hidden" name="_csrf" value="<%= csrf %>"><h2>✉️ Test your email settings</h2><div class="acts"><input class="in" name="to" placeholder="send test to… (default: your store email)" style="flex:1"><button class="btn sec">Send test</button></div><small class="help">Save the settings first, then test.</small></form>
+<%- include('_foot') %>

@@ -1,0 +1,18 @@
+<%- include('_head') %>
+<form class="toolbar" method="get"><input class="in" style="max-width:260px" name="q" value="<%= query.q||'' %>" placeholder="Search name, SKU, brand">
+<select class="in" style="max-width:190px" name="category"><option value="">All categories</option><% cats.forEach(c => { %><option value="<%= c.id %>" <%= query.category==c.id?'selected':'' %>><%= c.name %></option><% }) %></select>
+<select class="in" style="max-width:150px" name="status"><option value="">Any status</option><option value="active" <%= query.status==='active'?'selected':'' %>>Active</option><option value="inactive" <%= query.status==='inactive'?'selected':'' %>>Inactive / draft</option><option value="low" <%= query.status==='low'?'selected':'' %>>Low stock</option></select>
+<button class="btn">Filter</button><div class="sp"></div><a class="btn sec" href="/admin/import">⬆⬇ Import / Export</a><a class="btn" href="/admin/products/new">➕ Add product</a></form>
+<form method="post" action="/admin/products/bulk" class="card"><input type="hidden" name="_csrf" value="<%= csrf %>">
+<div class="toolbar"><b><%= total %> products</b><div class="sp"></div>
+ <select class="in" name="action" style="max-width:190px"><option value="">Bulk action…</option><option value="activate">Activate</option><option value="deactivate">Deactivate</option><option value="feature">Mark featured</option><option value="unfeature">Remove featured</option><option value="category">Move to category →</option><option value="price_pct">Change prices by % →</option><option value="delete">Delete</option></select>
+ <select class="in" name="category_id" style="max-width:160px"><option value="">(category)</option><% cats.forEach(c => { %><option value="<%= c.id %>"><%= c.name %></option><% }) %></select><input class="in" name="pct" type="number" step="0.1" placeholder="% e.g. 10 or -5" style="max-width:130px"><button class="btn sec" onclick="return confirm('Apply to selected products?')">Apply</button></div>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th><input type="checkbox" data-checkall></th><th></th><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th></th></tr></thead><tbody>
+<% rows.forEach(p => { %><tr><td><input type="checkbox" name="ids" value="<%= p.id %>"></td><td><% if (p.image) { %><img class="thumb" src="/uploads/<%= p.image %>" alt=""><% } else { %><div class="thumb" style="display:flex;align-items:center;justify-content:center">🖨️</div><% } %></td>
+<td><a href="/admin/products/<%= p.id %>/edit" style="font-weight:800;color:#1a1f5e"><%= p.name %></a><br><small class="muted"><%= p.brand||'' %> <%= p.sku ? '· ' + p.sku : '' %> <%= p.nv ? '· ' + p.nv + ' options' : '' %> <%= p.is_featured ? '· ⭐' : '' %></small></td>
+<td><%= p.cat_name %></td><td class="nowrap"><b><%= L.money(L.effectivePrice(p)) %></b><% if (p.sale_price && p.sale_price < p.price) { %><br><small class="muted" style="text-decoration:line-through"><%= L.money(p.price) %></small><% } %></td>
+<td><span class="pill <%= p.stock<=0?'cancelled':p.stock<=S.low_stock_threshold?'pending':'on' %>"><%= p.stock %></span></td><td><span class="pill <%= p.is_active?'on':'off' %>"><%= p.is_active?'active':'draft' %></span></td>
+<td class="acts"><a class="btn sec sm" href="/admin/products/<%= p.id %>/edit">Edit</a><a class="btn sec sm" target="_blank" href="/product/<%= p.slug %>">View</a></td></tr><% }) %>
+<% if (!rows.length) { %><tr><td colspan="8" class="muted" style="text-align:center;padding:2rem">No products found.</td></tr><% } %></tbody></table></div>
+<%- include('../partials/pagination') %></form>
+<%- include('_foot') %>

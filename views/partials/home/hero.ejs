@@ -1,0 +1,24 @@
+<% if (sec.slides.length) { %>
+<section class="hero-slider" id="heroSlider" data-count="<%= sec.slides.length %>" data-auto="<%= cfg.autoplay_ms || 4500 %>">
+  <div class="hero-track" id="heroTrack">
+    <% sec.slides.forEach(s => { const wa = 'https://wa.me/' + String(S.whatsapp).replace(/\D/g,''); %>
+    <div class="hero-slide" style="background:<%= L.safeBg(s.bg) || 'linear-gradient(135deg,#fff,#eef2ff)' %>;color:<%= L.isColor(s.text_color)?s.text_color:'inherit' %>;<%- L.isColor(s.tag_color) ? '--hero-hl:'+s.tag_color : '' %>">
+      <div class="hero-content">
+        <% if (s.tag) { %><div class="hero-tag" style="background:<%= L.isColor(s.tag_color)?s.tag_color:'var(--btn)' %>"><%= s.tag %></div><% } %>
+        <h1><%- L.highlight(s.heading) %></h1>
+        <% if (s.subtext) { %><p><%= s.subtext %></p><% } %>
+        <div class="hero-btns">
+          <% if (s.btn1_label) { %><a class="btn btn-<%= s.btn1_style||'red' %> btn-xl" href="<%= s.btn1_url==='whatsapp'?wa:(s.btn1_url||'/products') %>"><%= s.btn1_label %></a><% } %>
+          <% if (s.btn2_label) { %><a class="btn btn-<%= s.btn2_style||'navy' %> btn-xl" href="<%= s.btn2_url==='whatsapp'?wa:(s.btn2_url||'/products') %>"><%= s.btn2_label %></a><% } %>
+        </div>
+      </div>
+      <% if (s.image) { %><div class="hero-art"><img src="/uploads/misc/<%= s.image %>" alt=""></div><% } else if (s.emoji) { %><div class="hero-art" aria-hidden="true"><%= s.emoji %></div><% } %>
+    </div>
+    <% }) %>
+  </div>
+  <% if (sec.slides.length > 1) { %>
+  <button class="hero-arrow l" id="heroPrev" aria-label="Previous">‹</button><button class="hero-arrow r" id="heroNext" aria-label="Next">›</button>
+  <div class="hero-dots"><% sec.slides.forEach((s,i) => { %><button class="hero-dot <%= i===0?'active':'' %>" data-i="<%= i %>" aria-label="Slide <%= i+1 %>"></button><% }) %></div>
+  <% } %>
+</section>
+<% } %>

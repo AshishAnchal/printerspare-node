@@ -1,0 +1,2 @@
+<% if (!products.length) { %><div class="empty"><div class="big">❤️</div><h2>Nothing here yet</h2><p class="muted">Tap the heart on any product to save it.</p><a class="btn btn-navy" style="margin-top:1rem" href="/products">Browse products</a></div>
+<% } else { %><div class="products-grid"><% products.forEach(p => { %><%- include('product-card', {p}) %><% }) %></div><% } %>

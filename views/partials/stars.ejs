@@ -1,0 +1,1 @@
+<% const _r = Math.round(rating||0); %><span class="stars" aria-label="<%= (rating||0).toFixed(1) %> out of 5"><%= '★'.repeat(_r) %><span class="off"><%= '★'.repeat(5-_r) %></span></span>

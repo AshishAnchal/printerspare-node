@@ -1,0 +1,9 @@
+<%- include('_head') %>
+<div class="grid2" style="grid-template-columns:1fr 1fr">
+<div class="card"><h2>📥 Import products from CSV</h2><p class="muted" style="margin-bottom:.8rem">Add or update many products at once. Existing products are matched by <b>slug</b> or <b>SKU</b>. Unknown categories are created automatically.</p>
+ <div class="acts" style="margin-bottom:.8rem"><a class="btn sec sm" href="/admin/import/template.csv">⬇ Template</a><a class="btn sec sm" href="/admin/import/products.csv">⬇ Export all products</a></div>
+ <form method="post" action="/admin/import/products?_csrf=<%= csrf %>" enctype="multipart/form-data"><input class="in" type="file" name="csv" accept=".csv,text/csv" required><button class="btn" style="margin-top:.7rem">Import CSV</button></form></div>
+<div class="card"><h2>🐘 Import from your old PHP/MySQL store</h2><p class="muted" style="margin-bottom:.8rem">Your zip only contained the starter data. To bring over your <b>live</b> products, orders, customers, coupons and shipping zones: in phpMyAdmin → Export → Custom → tick <i>“Add INSERT statements / complete inserts”</i> → download the <code>.sql</code> and upload it here. Then copy the old <code>assets/uploads</code> folder contents into this app's <code>data/uploads</code> folder.</p>
+ <form method="post" action="/admin/import/mysql?_csrf=<%= csrf %>" enctype="multipart/form-data"><input class="in" type="file" name="sql" accept=".sql,text/plain" required><label class="chk" style="margin:.7rem 0"><input type="checkbox" name="replace"> Replace existing rows in those tables first</label><button class="btn warn">Import MySQL dump</button></form>
+ <p class="help">Customer &amp; admin password hashes from PHP (bcrypt) keep working, so logins carry over.</p></div></div>
+<%- include('_foot') %>

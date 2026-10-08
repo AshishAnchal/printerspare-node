@@ -1,0 +1,6 @@
+<%- include('../partials/header') %>
+<div class="container py-4"><div class="dash"><%- include('../partials/account-nav') %><section><h1 style="font-size:1.4rem;font-weight:900;margin-bottom:1rem">My Orders</h1>
+<% if (!orders.length) { %><div class="empty"><p class="muted">You haven't placed any orders yet.</p></div><% } else { %>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Order</th><th>Date</th><th>Payment</th><th>Total</th><th>Status</th><th></th></tr></thead><tbody><% orders.forEach(o => { %><tr><td><b><%= o.order_number %></b></td><td><%= L.fmtDay(o.created_at) %></td><td><span class="status <%= o.payment_status %>"><%= o.payment_method %> · <%= o.payment_status %></span></td><td><%= L.money(o.total) %></td><td><span class="status <%= o.order_status %>"><%= o.order_status %></span></td><td><a style="color:var(--primary);font-weight:700" href="/account/orders/<%= o.order_number %>">View</a></td></tr><% }) %></tbody></table></div><% } %>
+</section></div></div>
+<%- include('../partials/footer') %>

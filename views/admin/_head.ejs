@@ -1,0 +1,17 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title><%= title %> · Admin · <%= S.store_name %></title><link rel="stylesheet" href="/css/admin.css?v=2"></head>
+<body data-csrf="<%= csrf %>">
+<% const nav = [
+ ['Overview', [['/admin','📊','Dashboard']]],
+ ['Sales', [['/admin/orders','🧾','Orders', adm.pending],['/admin/customers','👥','Customers'],['/admin/coupons','🎟️','Coupons'],['/admin/enquiries','💬','Enquiries', adm.enq],['/admin/reviews','⭐','Reviews', adm.rev]]],
+ ['Catalog', [['/admin/products','📦','Products'],['/admin/categories','🗂️','Categories'],['/admin/brands','🏷️','Brands'],['/admin/import','⬆️','Import / Export']]],
+ ['Storefront', [['/admin/appearance','🎨','Appearance'],['/admin/homepage','🏠','Homepage builder'],['/admin/hero_slides','🖼️','Hero slides'],['/admin/trust_items','✅','Trust strip'],['/admin/menu_items','🔗','Menus'],['/admin/pages','📄','Pages']]],
+ ['Store setup', [['/admin/settings','⚙️','Settings'],['/admin/shipping_zones','🚚','Shipping zones'],['/admin/media','🖼','Media library'],['/admin/subscribers','📬','Subscribers'],['/admin/account','🔐','Admins & password'],['/admin/backup','💾','Backup']]],
+]; %>
+<aside class="side" id="side"><div class="brand"><i><%= S.logo_emoji %></i><span><%= S.store_name %><br><small style="font-weight:500;color:#94a3b8">Admin panel</small></span></div>
+<% nav.forEach(g => { %><h6><%= g[0] %></h6><% g[1].forEach(n => { %><a class="nav <%= (active===n[0] || (n[0]!=='/admin' && active.startsWith(n[0])))?'on':'' %>" href="<%= n[0] %>"><span><%= n[1] %></span><%= n[2] %><% if (n[3]) { %><span class="cnt"><%= n[3] %></span><% } %></a><% }) %><% }) %>
+<div style="flex:1"></div><a class="nav" href="/" target="_blank">🌐 View store</a><a class="nav" href="/admin/logout">🚪 Logout</a></aside>
+<div class="main"><div class="top"><button class="menu-btn" onclick="document.getElementById('side').classList.toggle('open')">☰</button><h1><%= title %></h1><div class="sp"></div><span class="muted">👤 <%= adm.name %></span></div>
+<div class="content">
+<% ['success','error','warning','info'].forEach(t => (flash[t]||[]).forEach(m => { %><div class="flash <%= t %>"><%= m %></div><% })) %>
+<% if (adm.defaultPw) { %><div class="flash warning">⚠️ You are still using the default admin password. <a href="/admin/account" style="text-decoration:underline;font-weight:800">Change it now</a>.</div><% } %>

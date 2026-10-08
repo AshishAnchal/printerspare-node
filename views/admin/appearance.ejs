@@ -1,0 +1,61 @@
+<%- include('_head') %>
+<% const F = Object.fromEntries(fields.map(f => [f.key, f])); const colorKeys = ['color_primary','color_primary_dark','color_accent','color_button','color_price','color_success','color_bg','color_surface','color_card','color_text','color_muted','color_border']; %>
+<form method="post" action="/admin/appearance" id="themeForm"><input type="hidden" name="_csrf" value="<%= csrf %>">
+<div class="toolbar"><span class="muted">Changes preview instantly on the right. Nothing goes live until you press Save.</span><div class="sp"></div><button class="btn sec" name="reset" value="1" onclick="return confirm('Reset all theme options to the original look?')">↺ Reset to original</button><button class="btn">💾 Save appearance</button></div>
+<div class="grid2 wide" style="grid-template-columns:minmax(0,520px) minmax(0,1fr)">
+<div>
+ <div class="card"><h2>🎨 Colour presets</h2><div class="acts" id="presets"><% Object.entries(PRESETS).forEach(([k,p]) => { %><button type="button" class="btn sec" data-preset="<%= k %>"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:<%= p.color_primary %>;border:2px solid <%= p.color_accent %>"></span> <%= p.label %></button><% }) %></div>
+  <input type="hidden" name="theme_preset" id="presetField" value="<%= vals.theme_preset %>"></div>
+ <div class="card"><h2>Colours</h2><div class="row2">
+  <% colorKeys.forEach(k => { %><div class="fg"><label><%= F[k].label %></label><div class="colorfield"><input type="color" value="<%= vals[k] %>"><input class="in" type="text" name="<%= k %>" value="<%= vals[k] %>" data-var="<%= k %>"></div></div><% }) %></div></div>
+ <div class="card"><h2>Typography & shape</h2><div class="row2">
+  <div class="fg"><label>Font</label><select class="in" name="font" data-var="font"><% Object.entries(F.font.options).forEach(([k,l]) => { %><option value="<%= k %>" <%= vals.font===k?'selected':'' %>><%= l %></option><% }) %></select></div>
+  <div class="fg"><label>Corner roundness: <b id="radVal"><%= vals.radius %></b>px</label><input type="range" min="0" max="28" name="radius" value="<%= vals.radius %>" data-var="radius" style="width:100%"></div>
+  <div class="fg"><label>Page width: <b id="cwVal"><%= vals.container_width %></b>px</label><input type="range" min="960" max="1600" step="20" name="container_width" value="<%= vals.container_width %>" data-var="container_width" style="width:100%"></div>
+  <div class="fg"><label>Logo shape</label><select class="in" name="logo_shape" data-cls="logo"><% Object.entries(F.logo_shape.options).forEach(([k,l]) => { %><option value="<%= k %>" <%= vals.logo_shape===k?'selected':'' %>><%= l %></option><% }) %></select></div></div></div>
+ <div class="card"><h2>Layout</h2><div class="row2">
+  <div class="fg"><label>Header style</label><select class="in" name="header_style" data-cls="hdr"><% Object.entries(F.header_style.options).forEach(([k,l]) => { %><option value="<%= k %>" <%= vals.header_style===k?'selected':'' %>><%= l %></option><% }) %></select></div>
+  <div class="fg"><label>Card style</label><select class="in" name="card_style" data-cls="card"><% Object.entries(F.card_style.options).forEach(([k,l]) => { %><option value="<%= k %>" <%= vals.card_style===k?'selected':'' %>><%= l %></option><% }) %></select></div>
+  <div class="fg"><label>Products per row</label><select class="in" name="grid_cols" data-var="grid_cols"><% Object.entries(F.grid_cols.options).forEach(([k,l]) => { %><option value="<%= k %>" <%= String(vals.grid_cols)===k?'selected':'' %>><%= l %></option><% }) %></select></div>
+  <div class="fg"><label>Product image fit</label><select class="in" name="image_fit" data-var="image_fit"><% Object.entries(F.image_fit.options).forEach(([k,l]) => { %><option value="<%= k %>" <%= vals.image_fit===k?'selected':'' %>><%= l %></option><% }) %></select></div></div>
+  <label class="chk"><input type="checkbox" name="sticky_header" <%= vals.sticky_header?'checked':'' %>> Sticky header</label><p class="help">More toggles (ratings, wishlist, WhatsApp button, category bar…) live in <a href="/admin/settings" style="text-decoration:underline">Settings → Layout & Display</a>.</p></div>
+ <div class="card"><h2>📣 Announcement bar</h2><label class="chk"><input type="checkbox" name="ann_enabled" <%= vals.ann_enabled?'checked':'' %>> Show announcement bar</label>
+  <div class="fg" style="margin-top:.7rem"><label>Message (HTML allowed)</label><textarea class="in" name="ann_text" data-ann><%= vals.ann_text %></textarea><small>Placeholders: {free_shipping} {phone} {store_name}</small></div>
+  <div class="row2"><div class="fg"><label>Background</label><div class="colorfield"><input type="color" value="<%= vals.ann_bg %>"><input class="in" type="text" name="ann_bg" value="<%= vals.ann_bg %>" data-var="ann_bg"></div></div><div class="fg"><label>Text colour</label><div class="colorfield"><input type="color" value="<%= vals.ann_color %>"><input class="in" type="text" name="ann_color" value="<%= vals.ann_color %>" data-var="ann_color"></div></div></div>
+  <div class="fg"><label>Link (optional)</label><input class="in" name="ann_link" value="<%= vals.ann_link %>"></div><label class="chk"><input type="checkbox" name="ann_dismissible" <%= vals.ann_dismissible?'checked':'' %>> Visitors can close it</label></div>
+ <div class="card"><h2>🧑‍💻 Custom CSS</h2><textarea class="in code" name="custom_css" spellcheck="false" placeholder=".pcard { border-radius: 20px; }"><%= vals.custom_css %></textarea><small>Applied after the theme on every storefront page.</small></div>
+</div>
+<div style="position:sticky;top:70px"><div class="card" style="padding:.6rem"><div class="toolbar" style="margin:.2rem .4rem .6rem"><b>Live preview</b><div class="sp"></div>
+ <select class="in" id="pvPage" style="max-width:190px"><option value="/">Homepage</option><option value="/products">Shop</option><option value="/cart">Cart</option><option value="/enquiry">Enquiry form</option></select><div class="acts"><button type="button" class="btn sec sm" id="pvM">📱</button><button type="button" class="btn sec sm" id="pvD">🖥</button></div></div>
+ <div style="display:flex;justify-content:center;background:#e2e8f0;border-radius:10px;padding:.4rem"><iframe id="pv" src="/" style="width:100%;height:78vh;border:0;background:#fff;border-radius:8px;transition:width .25s"></iframe></div></div></div>
+</div></form>
+<script>
+(function(){
+ var PRESETS=<%- JSON.stringify(PRESETS).replace(/</g,'\\u003c') %>, FONTS={inter:"'Inter',system-ui,sans-serif",poppins:"'Poppins',system-ui,sans-serif",roboto:"'Roboto',system-ui,sans-serif",dmsans:"'DM Sans',system-ui,sans-serif",nunito:"'Nunito',system-ui,sans-serif",lora:"'Lora',serif",system:"system-ui,sans-serif"};
+ var FONTQ={inter:'Inter:wght@400;500;600;700;800;900',poppins:'Poppins:wght@400;500;600;700;800',roboto:'Roboto:wght@400;500;700;900',dmsans:'DM+Sans:wght@400;500;700',nunito:'Nunito:wght@400;600;700;800;900',lora:'Lora:wght@400;600;700'};
+ var form=document.getElementById('themeForm'), fr=document.getElementById('pv'), cur={};
+ function lum(h){h=h.replace('#','');if(h.length===3)h=h.split('').map(function(c){return c+c}).join('');var a=[0,2,4].map(function(i){var v=parseInt(h.substr(i,2),16)/255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)});return .2126*a[0]+.7152*a[1]+.0722*a[2]}
+ function on(h){return lum(h)>.45?'#111827':'#ffffff'}
+ function val(n){return form.elements[n]?form.elements[n].value:''}
+ function apply(){
+  var d=fr.contentDocument; if(!d||!d.documentElement)return; var s=d.documentElement.style;
+  var m={color_primary:'--primary',color_primary_dark:'--primary-dark',color_accent:'--accent',color_button:'--btn',color_price:'--price',color_success:'--success',color_bg:'--bg',color_surface:'--surface',color_card:'--card',color_text:'--text',color_muted:'--muted',color_border:'--border',ann_bg:'--ann-bg',ann_color:'--ann-color'};
+  Object.keys(m).forEach(function(k){var v=val(k);if(/^#[0-9a-f]{6}$/i.test(v))s.setProperty(m[k],v)});
+  var p=val('color_primary'),b=val('color_button'),a=val('color_accent'); if(/^#[0-9a-f]{6}$/i.test(p))s.setProperty('--on-primary',on(p)); if(/^#[0-9a-f]{6}$/i.test(b))s.setProperty('--on-btn',on(b)); if(/^#[0-9a-f]{6}$/i.test(a))s.setProperty('--on-accent',on(a));
+  var light=val('header_style')==='light'; s.setProperty('--hdr-bg',light?val('color_card'):p); s.setProperty('--hdr-text',light?val('color_text'):on(p));
+  s.setProperty('--radius',val('radius')+'px'); s.setProperty('--container',val('container_width')+'px'); s.setProperty('--cols',val('grid_cols')); s.setProperty('--img-fit',val('image_fit'));
+  s.setProperty('--font',FONTS[val('font')]); if(FONTQ[val('font')]&&!d.getElementById('pvfont')){var l=d.createElement('link');l.id='pvfont';l.rel='stylesheet';d.head.appendChild(l)} var l2=d.getElementById('pvfont'); if(l2&&FONTQ[val('font')])l2.href='https://fonts.googleapis.com/css2?family='+FONTQ[val('font')]+'&display=swap';
+  var body=d.body; if(body){body.className=body.className.replace(/\b(card|hdr)-\w+/g,'').trim()+' card-'+val('card_style')+' hdr-'+val('header_style'); d.querySelectorAll('.brand-mark').forEach(function(e){e.className='brand-mark '+val('logo_shape')});}
+  var ann=d.getElementById('annBar'); if(ann&&form.elements.ann_enabled)ann.style.display=form.elements.ann_enabled.checked?'':'none';
+  var sh=d.getElementById('siteHeader'); if(sh)sh.style.position=form.elements.sticky_header.checked?'':'static';
+  document.getElementById('radVal').textContent=val('radius'); document.getElementById('cwVal').textContent=val('container_width');
+  var cs=d.getElementById('pvcss'); if(!cs){cs=d.createElement('style');cs.id='pvcss';d.head.appendChild(cs)} cs.textContent=val('custom_css');
+ }
+ fr.addEventListener('load',apply); form.addEventListener('input',apply); form.addEventListener('change',apply);
+ document.getElementById('presets').addEventListener('click',function(e){var b=e.target.closest('[data-preset]');if(!b)return;var p=PRESETS[b.dataset.preset];Object.keys(p).forEach(function(k){var el=form.elements[k];if(el&&k!=='label'){el.value=p[k];var c=el.parentElement.querySelector('input[type=color]');if(c&&/^#[0-9a-f]{6}$/i.test(p[k]))c.value=p[k]}});form.elements.theme_preset.value=b.dataset.preset;apply()});
+ form.addEventListener('input',function(e){if(/^(color_|ann_bg|ann_color)/.test(e.target.name||''))form.elements.theme_preset.value='custom'});
+ document.getElementById('pvPage').onchange=function(){fr.src=this.value};
+ document.getElementById('pvM').onclick=function(){fr.style.width='390px'}; document.getElementById('pvD').onclick=function(){fr.style.width='100%'};
+})();
+</script>
+<%- include('_foot') %>

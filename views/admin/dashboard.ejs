@@ -1,0 +1,31 @@
+<%- include('_head') %>
+<div class="stats">
+  <div class="stat" style="--c:#16a34a"><span>Today</span><b><%= L.money0(stats.today.s) %></b><small><%= stats.today.n %> order<%= stats.today.n===1?'':'s' %></small></div>
+  <div class="stat" style="--c:#2563eb"><span>This month</span><b><%= L.money0(stats.month.s) %></b><small><%= stats.month.n %> orders</small></div>
+  <div class="stat" style="--c:#7c3aed"><span>All time</span><b><%= L.money0(stats.all.s) %></b><small><%= stats.all.n %> orders · avg <%= L.money0(stats.aov) %></small></div>
+  <div class="stat" style="--c:#f59e0b"><span>Products</span><b><%= stats.products.n %></b><small><%= stats.products.a||0 %> live · <%= stats.customers %> customers</small></div>
+</div>
+<div class="grid2">
+  <div>
+    <div class="card"><h2>Sales — last 14 days</h2>
+      <% const max = Math.max(1, ...series.map(s => s.s)); %>
+      <svg viewBox="0 0 700 190" style="width:100%;height:auto" role="img" aria-label="Sales per day">
+        <% series.forEach((s,i) => { const h = Math.round(s.s/max*140); const x = 12 + i*49; %>
+          <rect x="<%= x %>" y="<%= 150-h %>" width="34" height="<%= Math.max(h,2) %>" rx="4" fill="#1a1f5e" opacity="<%= s.s ? 1 : .18 %>"><title><%= s.d %>: <%= L.money0(s.s) %> (<%= s.n %> orders)</title></rect>
+          <text x="<%= x+17 %>" y="170" text-anchor="middle" font-size="10" fill="#64748b"><%= s.d.slice(8) %></text>
+          <% if (s.s) { %><text x="<%= x+17 %>" y="<%= 144-h %>" text-anchor="middle" font-size="9.5" fill="#0f172a" font-weight="700"><%= s.s>=1000 ? (s.s/1000).toFixed(1)+'k' : Math.round(s.s) %></text><% } %>
+        <% }) %></svg></div>
+    <div class="card"><div class="toolbar" style="margin:0 0 .6rem"><h2 style="margin:0">Recent orders</h2><div class="sp"></div><a class="btn sec sm" href="/admin/orders">View all</a></div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Payment</th><th>Status</th></tr></thead><tbody>
+      <% recent.forEach(o => { %><tr><td><a href="/admin/orders/<%= o.id %>" style="color:#1a1f5e;font-weight:800"><%= o.order_number %></a><br><small class="muted"><%= L.fmtDate(o.created_at) %></small></td><td><%= o.name %><br><small class="muted"><%= o.city %></small></td><td><b><%= L.money(o.total) %></b></td><td><span class="pill <%= o.payment_status %>"><%= o.payment_method %> · <%= o.payment_status %></span></td><td><span class="pill <%= o.order_status %>"><%= o.order_status %></span></td></tr><% }) %>
+      <% if (!recent.length) { %><tr><td colspan="5" class="muted" style="text-align:center;padding:1.5rem">No orders yet.</td></tr><% } %></tbody></table></div></div>
+  </div>
+  <div>
+    <div class="card"><h2>⚠️ Low stock</h2><% if (!low.length) { %><p class="muted">All products are well stocked.</p><% } %>
+      <% low.forEach(p => { %><div style="display:flex;gap:.6rem;align-items:center;margin-bottom:.5rem"><% if (p.image) { %><img class="thumb" src="/uploads/<%= p.image %>" alt=""><% } %><a href="/admin/products/<%= p.id %>/edit" style="flex:1;font-weight:600"><%= p.name %></a><span class="pill <%= p.stock<=0?'cancelled':'pending' %>"><%= p.stock %> left</span></div><% }) %></div>
+    <div class="card"><h2>🏆 Best sellers</h2><% if (!top.length) { %><p class="muted">Appears after your first orders.</p><% } %><% top.forEach(t => { %><div style="display:flex;justify-content:space-between;gap:.6rem;margin-bottom:.4rem"><span><%= t.name %></span><b><%= t.qty %> sold</b></div><% }) %></div>
+    <div class="card"><h2>Orders by status</h2><% const tot = byStatus.reduce((a,b)=>a+b.n,0)||1; byStatus.forEach(s => { %><div style="margin-bottom:.5rem"><div style="display:flex;justify-content:space-between"><span class="pill <%= s.s %>"><%= s.s %></span><b><%= s.n %></b></div><div class="bar" style="margin-top:.2rem"><i style="width:<%= Math.round(s.n/tot*100) %>%"></i></div></div><% }) %></div>
+    <div class="card"><h2>Quick links</h2><div class="acts"><a class="btn sec sm" href="/admin/products/new">➕ Product</a><a class="btn sec sm" href="/admin/appearance">🎨 Theme</a><a class="btn sec sm" href="/admin/homepage">🏠 Homepage</a><a class="btn sec sm" href="/admin/settings">⚙️ Settings</a></div></div>
+  </div>
+</div>
+<%- include('_foot') %>

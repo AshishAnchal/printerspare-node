@@ -1,0 +1,32 @@
+<%- include('../partials/header') %>
+<div class="container py-4">
+  <h1 style="font-size:1.5rem;font-weight:900;margin-bottom:1.2rem">🛒 Shopping Cart <small class="muted">(<%= cartCount %> item<%= cartCount===1?'':'s' %>)</small></h1>
+  <% if (!t.items.length) { %><div class="empty"><div class="big">🛒</div><h2>Your cart is empty</h2><p class="muted" style="margin:.4rem 0 1.2rem">Add some printer parts to get started!</p><a class="btn btn-navy btn-lg" href="/products">Browse products</a></div>
+  <% } else { %>
+  <div class="cart-layout"><div>
+    <% t.items.forEach(i => { %><div class="cart-item">
+      <a href="/product/<%= i.product.slug %>"><% if (i.product.image) { %><img src="/uploads/<%= i.product.image %>" alt=""><% } else { %><div style="width:96px;height:96px;display:flex;align-items:center;justify-content:center;font-size:2rem;opacity:.3">🖨️</div><% } %></a>
+      <div class="ci-body"><div class="pbrand"><%= i.product.brand || i.product.category_name %></div><h3><a href="/product/<%= i.product.slug %>"><%= i.product.name %></a></h3>
+        <% if (i.label) { %><div class="muted" style="font-size:.85rem">Option: <b><%= i.label %></b></div><% } %>
+        <div class="muted" style="font-size:.85rem"><%= L.money(i.unit) %> each<% if (!i.inStock) { %> · <span style="color:#ef4444;font-weight:700">Out of stock — remove to continue</span><% } else if (i.stock < S.low_stock_threshold) { %> · <span style="color:#b45309">Only <%= i.stock %> left</span><% } %></div>
+        <form method="post" action="/cart/update" style="margin-top:.6rem;display:flex;gap:.5rem;align-items:center"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="key" value="<%= i.key %>">
+          <div class="qty"><button type="button" data-q="-1">−</button><input type="number" name="qty" value="<%= i.qty %>" min="1" max="<%= i.stock||99 %>" data-autosubmit><button type="button" data-q="1">+</button></div></form></div>
+      <div class="ci-right"><b style="font-size:1.1rem;color:var(--price)"><%= L.money(i.line) %></b>
+        <form method="post" action="/cart/remove"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="key" value="<%= i.key %>"><button class="btn btn-outline btn-sm" style="color:#ef4444">🗑 Remove</button></form></div>
+    </div><% }) %>
+    <a class="btn btn-outline" href="/products">← Continue shopping</a>
+  </div>
+  <aside class="summary"><h2>Order Summary</h2>
+    <% if (t.toFree > 0) { %><div style="font-size:.82rem;font-weight:700">Add <%= L.money0(t.toFree) %> more for <span style="color:var(--success)">FREE shipping</span></div><div class="free-bar"><i style="width:<%= Math.min(100, Math.round((S.free_shipping_above - t.toFree) / S.free_shipping_above * 100)) %>%"></i></div><% } else if (t.freeShip) { %><div style="font-size:.85rem;font-weight:700;color:var(--success)">🎉 You've unlocked FREE shipping!</div><% } %>
+    <div class="sline"><span>Subtotal</span><span><%= L.money(t.subtotal) %></span></div>
+    <% if (t.discount > 0) { %><div class="sline disc"><span>Coupon (<%= t.couponCode %>) <form method="post" action="/cart/coupon/remove" style="display:inline"><input type="hidden" name="_csrf" value="<%= csrf %>"><button style="background:none;border:0;color:#ef4444;cursor:pointer;font-size:.75rem">remove</button></form></span><span>−<%= L.money(t.discount) %></span></div><% } %>
+    <% if (t.gstMode !== 'none') { %><div class="sline"><span>GST (<%= t.gstPct %>%)<%= t.gstMode==='inclusive'?' incl.':'' %></span><span><%= L.money(t.gst) %></span></div><% } %>
+    <div class="sline"><span>Shipping</span><span><%- t.shipping ? L.money(t.shipping) : '<b style="color:var(--success)">FREE</b>' %></span></div>
+    <div class="sline total"><span>Total</span><span><%= L.money(t.total) %></span></div>
+    <p class="muted" style="font-size:.76rem">Shipping shown is the standard rate; the exact charge is calculated at checkout from your pincode.</p>
+    <% if (!t.couponCode) { %><form class="coupon-row" method="post" action="/cart/coupon"><input type="hidden" name="_csrf" value="<%= csrf %>"><input class="form-input" name="code" placeholder="Coupon code" style="text-transform:uppercase"><button class="btn btn-navy">Apply</button></form><% } %>
+    <a class="btn btn-red btn-xl w-full" href="/checkout">Proceed to Checkout →</a>
+  </aside></div>
+  <% } %>
+</div>
+<%- include('../partials/footer') %>

@@ -1,0 +1,6 @@
+<% sec.blocks.forEach((b, i) => { %>
+<section class="section <%= i % 2 === 0 ? 'alt' : '' %>"><div class="container">
+  <div class="section-head"><div class="section-title"><%= b.cat.name %></div><a class="section-link" href="/products?category=<%= b.cat.slug %>">View all</a></div>
+  <div class="products-grid"><% b.products.forEach(p => { %><%- include('../product-card', {p}) %><% }) %></div>
+</div></section>
+<% }) %>

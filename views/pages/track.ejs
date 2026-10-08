@@ -1,0 +1,22 @@
+<%- include('../partials/header') %>
+<div class="container py-4" style="max-width:760px">
+  <h1 style="font-size:1.6rem;font-weight:900;margin-bottom:.3rem">📍 Track Your Order</h1><p class="muted" style="margin-bottom:1.2rem">Use your order number, or a courier tracking number (AWB).</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem">
+    <form method="post" action="/track" class="form-card"><input type="hidden" name="_csrf" value="<%= csrf %>"><h2>By order number</h2>
+      <div class="form-group"><label>Order number</label><input class="form-input" name="order" placeholder="ORD-20260101-ABCDE" value="<%= q.order %>" required></div>
+      <div class="form-group"><label>Email or phone used at checkout</label><input class="form-input" name="contact" value="<%= q.contact %>" required></div><button class="btn btn-navy w-full">Track</button></form>
+    <form method="post" action="/track" class="form-card"><input type="hidden" name="_csrf" value="<%= csrf %>"><h2>By AWB number</h2>
+      <div class="form-group"><label>Courier AWB / waybill</label><input class="form-input" name="awb" value="<%= q.awb %>" required></div><button class="btn btn-navy w-full">Track shipment</button></form>
+  </div>
+  <% if (error) { %><div class="alert alert-error inline-alert"><%= error %></div><% } %>
+  <% if (order) { %><div class="form-card"><h2>Order #<%= order.order_number %> <span class="status <%= order.order_status %>"><%= order.order_status %></span></h2>
+    <div class="timeline"><% const cur = FLOW.indexOf(order.order_status); FLOW.forEach((st,i) => { %><div class="tl <%= order.order_status==='cancelled'?'':(i<cur?'done':i===cur?'cur':'') %>"><i><%= i<cur?'✓':i+1 %></i><%= st[0].toUpperCase()+st.slice(1) %></div><% }) %></div>
+    <p class="muted" style="font-size:.9rem"><%= items.map(i => i.product_name + ' × ' + i.quantity).join(', ') %> — <b><%= L.money(order.total) %></b></p>
+    <% if (order.awb) { %><p style="margin-top:.5rem">🚚 <b><%= order.courier || 'Courier' %></b> — AWB <b><%= order.awb %></b></p><% } %>
+    <ul style="margin-top:1rem;border-left:3px solid var(--border);padding-left:1rem"><% events.slice().reverse().forEach(e => { %><li style="margin-bottom:.6rem;font-size:.9rem"><b><%= e.label %></b><br><small class="muted"><%= L.fmtDate(e.created_at) %></small></li><% }) %></ul></div><% } %>
+  <% if (shipment) { %><div class="form-card"><h2>🚚 Courier status</h2>
+    <p><b><%= (shipment.Status && shipment.Status.Status) || 'In transit' %></b><% if (shipment.Status && shipment.Status.StatusLocation) { %> — <%= shipment.Status.StatusLocation %><% } %></p>
+    <% if (shipment.ExpectedDeliveryDate) { %><p class="muted">Expected: <%= String(shipment.ExpectedDeliveryDate).slice(0,10) %></p><% } %>
+    <ul style="margin-top:.8rem;border-left:3px solid var(--border);padding-left:1rem"><% (shipment.Scans||[]).slice().reverse().slice(0,15).forEach(s => { const d = s.ScanDetail||{}; %><li style="margin-bottom:.6rem;font-size:.88rem"><b><%= d.Scan || d.Instructions %></b> <span class="muted">— <%= d.ScannedLocation %></span><br><small class="muted"><%= String(d.ScanDateTime||'').replace('T',' ').slice(0,16) %></small></li><% }) %></ul></div><% } %>
+</div>
+<%- include('../partials/footer') %>

@@ -1,0 +1,13 @@
+<%- include('../partials/header') %>
+<div class="container py-4"><div class="enq">
+  <form method="post" action="/enquiry" class="form-card"><input type="hidden" name="_csrf" value="<%= csrf %>">
+    <h1 style="font-size:1.5rem;font-weight:900;margin-bottom:.3rem">🔍 Find My Part</h1><p class="muted" style="margin-bottom:1.1rem">Can't find your part? Tell us your printer details and we'll source it.</p>
+    <div class="form-row"><div class="form-group"><label>Your name *</label><input class="form-input" name="name" required value="<%= form.name||'' %>"></div><div class="form-group"><label>Phone / WhatsApp</label><input class="form-input" name="phone" value="<%= form.phone||'' %>"></div></div>
+    <div class="form-group"><label>Email *</label><input class="form-input" type="email" name="email" required value="<%= form.email||user?.email||'' %>"></div>
+    <div class="form-row"><div class="form-group"><label>Printer brand</label><select class="form-select" name="printer_brand"><option value="">Select</option><% brands.forEach(b => { %><option <%= form.printer_brand===b.name?'selected':'' %>><%= b.name %></option><% }) %><option>Other</option></select></div><div class="form-group"><label>Printer model</label><input class="form-input" name="printer_model" placeholder="e.g. LaserJet P1007" value="<%= form.printer_model||'' %>"></div></div>
+    <div class="form-group"><label>What do you need? *</label><textarea class="form-ta" name="message" required placeholder="Part name, part number, problem you're facing…"><%= form.message||'' %></textarea></div>
+    <button class="btn btn-red btn-lg">Send enquiry →</button></form>
+  <aside><div class="form-card"><h2>Prefer to chat?</h2><p class="muted" style="margin-bottom:1rem">Send a photo of the part on WhatsApp — fastest way to identify it.</p><a class="btn btn-whatsapp w-full" target="_blank" rel="noopener" href="https://wa.me/<%= String(S.whatsapp).replace(/\D/g,'') %>?text=<%= encodeURIComponent('Hi, I need help finding a printer part.') %>">💬 WhatsApp us</a>
+    <p style="margin-top:1rem;font-size:.9rem">📞 <%= S.phone %><br>✉️ <%= S.email %><br>🕐 <%= S.business_hours %></p></div></aside>
+</div></div>
+<%- include('../partials/footer') %>

@@ -1,0 +1,39 @@
+<%- include('_head') %>
+<% if (cfg.help) { %><div class="flash info"><%= cfg.help %></div><% } %>
+<div class="grid2 <%= cfg.fields.length > 8 ? 'wide' : '' %>">
+ <div class="card"><div class="toolbar" style="margin:0 0 .7rem"><h2 style="margin:0"><%= cfg.title %> <span class="muted">(<%= rows.length %>)</span></h2></div>
+  <div class="tbl-wrap"><table class="tbl"><thead><tr><% if (cfg.sortable) { %><th></th><% } %><% cfg.cols.forEach(c => { %><th><%= c.replace(/_/g,' ') %></th><% }) %><th></th></tr></thead><tbody>
+  <% rows.forEach((x,ri) => { %><tr>
+   <% if (cfg.sortable) { %><td class="nowrap"><form method="post" action="/admin/<%= key %>/<%= x.id %>/move" style="display:inline"><input type="hidden" name="_csrf" value="<%= csrf %>"><button name="dir" value="up" class="btn sec sm" title="Move up">↑</button><button name="dir" value="down" class="btn sec sm" title="Move down">↓</button></form></td><% } %>
+   <% cfg.cols.forEach(c => { const v = x[c]; %><td>
+     <% if (c==='image'||c==='logo') { %><% if (v) { %><img class="thumb" src="/uploads/<%= cfg.dir==='cats'?'cats/':'' %><%= v %>" alt=""><% } %>
+     <% } else if (c==='is_active'||c==='show_in_footer'||c==='show_on_home') { %><span class="pill <%= v?'on':'off' %>"><%= v?'yes':'no' %></span>
+     <% } else if (c==='text_color') { %><span style="display:inline-block;width:18px;height:18px;border-radius:5px;background:<%= L.isColor(v)?v:'#ccc' %>;vertical-align:middle;border:1px solid #cbd5e1"></span> <%= v %>
+     <% } else if (c==='status') { %><span class="pill <%= v %>"><%= v %></span>
+     <% } else if (c==='created_at') { %><small><%= L.fmtDate(v) %></small>
+     <% } else if (c==='message') { %><div style="max-width:300px;white-space:pre-line"><%= String(v||'').slice(0,240) %></div>
+     <% } else if (c==='charge'||c==='min_order'||c==='value' && key==='coupons') { %><%= key==='coupons' && x.type==='percent' && c==='value' ? v + '%' : L.money0(v) %>
+     <% } else { %><%= String(v ?? '').slice(0,70) %><% } %></td><% }) %>
+   <td class="acts"><a class="btn sec sm" href="/admin/<%= key %>?edit=<%= x.id %>">Edit</a>
+    <% if (cfg.toggle) { %><form method="post" action="/admin/<%= key %>/<%= x.id %>/toggle"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn sec sm"><%= x.is_active ? 'Hide' : 'Show' %></button></form><% } %>
+    <% if (key==='enquiries') { %><a class="btn grn sm" target="_blank" rel="noopener" href="https://wa.me/91<%= String(x.phone||'').replace(/\D/g,'').slice(-10) %>">💬</a><a class="btn sec sm" href="mailto:<%= x.email %>">✉️</a><% } %>
+    <form method="post" action="/admin/<%= key %>/<%= x.id %>/delete" data-confirm="Delete this item?"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn red sm">🗑</button></form></td></tr><% }) %>
+  <% if (!rows.length) { %><tr><td colspan="9" class="muted" style="text-align:center;padding:1.6rem">Nothing here yet.</td></tr><% } %></tbody></table></div></div>
+ <% if (!cfg.noCreate || edit) { %>
+ <form class="card" method="post" action="/admin/<%= key %>?_csrf=<%= csrf %>" enctype="multipart/form-data" style="position:sticky;top:70px"><input type="hidden" name="id" value="<%= edit ? edit.id : '' %>">
+  <h2><%= edit ? '✏️ Edit' : '➕ Add new' %></h2>
+  <% if (key==='enquiries' && edit) { %><div class="fg"><b><%= edit.name %></b> — <%= edit.email %> <%= edit.phone||'' %><br><%= edit.printer_brand||'' %> <%= edit.printer_model||'' %><p style="white-space:pre-line;margin-top:.4rem"><%= edit.message %></p></div><% } %>
+  <% cfg.fields.forEach(f => { const v = edit ? edit[f.name] : (f.def ?? ''); %>
+   <div class="fg"><% if (f.type==='bool') { %><label class="chk"><input type="checkbox" name="<%= f.name %>" <%= (edit ? edit[f.name] : f.def) ? 'checked' : '' %>> <%= f.label %></label>
+   <% } else { %><label><%= f.label %></label>
+    <% if (f.type==='textarea') { %><textarea class="in" name="<%= f.name %>" <%= f.required?'required':'' %>><%= v ?? '' %></textarea>
+    <% } else if (f.type==='html') { %><textarea class="in code" name="<%= f.name %>" style="min-height:240px"><%= v ?? '' %></textarea>
+    <% } else if (f.type==='select') { %><select class="in" name="<%= f.name %>"><% Object.entries(f.options).forEach(([k,l]) => { %><option value="<%= k %>" <%= String(v)===k?'selected':'' %>><%= l %></option><% }) %></select>
+    <% } else if (f.type==='color') { %><div class="colorfield"><input type="color" value="<%= L.isColor(v)&&String(v).length===7?v:'#1a1f5e' %>"><input class="in" type="text" name="<%= f.name %>" value="<%= v ?? '' %>" placeholder="<%= f.empty ? 'none' : '#1a1f5e' %>"></div>
+    <% } else if (f.type==='image') { %><% const pre = edit && edit[f.name] ? '/uploads/' + (cfg.dir==='cats' ? 'cats/' : 'misc/') + edit[f.name] : ''; %><img id="pv_<%= f.name %>" class="imgprev" style="<%= pre?'':'display:none' %>" src="<%= pre %>" alt=""><input class="in" type="file" name="<%= f.name %>" accept="image/*" data-preview="pv_<%= f.name %>"><% if (pre) { %><label class="chk" style="margin-top:.3rem"><input type="checkbox" name="remove_<%= f.name %>"> Remove image</label><% } %>
+    <% } else { %><input class="in" type="<%= f.type==='number'?'number':f.type==='date'?'date':'text' %>" <%= f.type==='number' ? 'step=' + (f.step||'any') : '' %> name="<%= f.name %>" value="<%= v ?? '' %>" <%= f.required?'required':'' %>><% } %>
+    <% if (f.help) { %><small><%= f.help %></small><% } %><% } %></div>
+  <% }) %>
+  <div class="acts"><button class="btn">💾 Save</button><% if (edit) { %><a class="btn sec" href="/admin/<%= key %>">Cancel</a><% } %></div></form><% } %>
+</div>
+<%- include('_foot') %>

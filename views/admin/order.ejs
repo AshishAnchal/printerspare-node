@@ -1,0 +1,19 @@
+<%- include('_head') %>
+<div class="toolbar"><a class="btn sec sm" href="/admin/orders">← Orders</a><div class="sp"></div>
+  <a class="btn sec sm" target="_blank" href="/admin/orders/<%= o.id %>/invoice">🧾 Invoice / print</a>
+  <a class="btn grn sm" target="_blank" rel="noopener" href="https://wa.me/91<%= o.phone.replace(/\D/g,'').slice(-10) %>?text=<%= encodeURIComponent('Hi ' + o.name + ', update on your order #' + o.order_number + ': ' + o.order_status + (o.awb ? ' · AWB ' + o.awb : '')) %>">💬 WhatsApp customer</a>
+  <form method="post" action="/admin/orders/<%= o.id %>/delete" data-confirm="Delete this order permanently?"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn red sm">Delete</button></form></div>
+<div class="grid2">
+ <div>
+  <div class="card"><h2>Items</h2><div class="tbl-wrap"><table class="tbl"><tbody><% items.forEach(i => { %><tr><td style="width:54px"><% if (i.product_image) { %><img class="thumb" src="/uploads/<%= i.product_image %>" alt=""><% } %></td><td><%= i.product_name %></td><td>× <%= i.quantity %></td><td class="right"><%= L.money(i.price) %></td><td class="right"><b><%= L.money(i.total) %></b></td></tr><% }) %></tbody>
+  <tfoot><tr><td colspan="4" class="right muted">Subtotal</td><td class="right"><%= L.money(o.subtotal) %></td></tr><% if (o.discount) { %><tr><td colspan="4" class="right muted">Discount <%= o.coupon_code %></td><td class="right">−<%= L.money(o.discount) %></td></tr><% } %><% if (o.gst) { %><tr><td colspan="4" class="right muted">GST</td><td class="right"><%= L.money(o.gst) %></td></tr><% } %><tr><td colspan="4" class="right muted">Shipping</td><td class="right"><%= L.money(o.shipping) %></td></tr><% if (o.cod_fee) { %><tr><td colspan="4" class="right muted">COD fee</td><td class="right"><%= L.money(o.cod_fee) %></td></tr><% } %><tr><td colspan="4" class="right"><b>Total</b></td><td class="right"><b style="font-size:1.1rem"><%= L.money(o.total) %></b></td></tr></tfoot></table></div></div>
+  <div class="card"><h2>Customer & delivery</h2><p><b><%= o.name %></b><br><%= o.address %>, <%= o.city %>, <%= o.state %> — <%= o.pincode %><br>📞 <%= o.phone %> · ✉️ <%= o.email %></p><% if (o.notes) { %><p style="margin-top:.6rem"><b>Customer note:</b> <%= o.notes %></p><% } %><% if (o.razorpay_payment_id) { %><p class="muted" style="margin-top:.6rem">Razorpay payment: <%= o.razorpay_payment_id %></p><% } %></div>
+  <div class="card"><h2>Timeline</h2><% events.forEach(e => { %><div style="margin-bottom:.5rem"><b><%= e.label %></b> <small class="muted">· <%= L.fmtDate(e.created_at) %></small></div><% }) %></div>
+ </div>
+ <form class="card" method="post" action="/admin/orders/<%= o.id %>"><input type="hidden" name="_csrf" value="<%= csrf %>"><h2>Update order</h2>
+  <div class="fg"><label>Order status</label><select class="in" name="order_status"><% STATUSES.forEach(s => { %><option <%= o.order_status===s?'selected':'' %>><%= s %></option><% }) %></select><small>Customer is emailed on change (if SMTP is set up). Cancelling restores stock.</small></div>
+  <div class="fg"><label>Payment status</label><select class="in" name="payment_status"><% ['pending','paid','failed'].forEach(s => { %><option <%= o.payment_status===s?'selected':'' %>><%= s %></option><% }) %></select></div>
+  <div class="row2"><div class="fg"><label>Courier</label><input class="in" name="courier" value="<%= o.courier || S.default_courier %>"></div><div class="fg"><label>AWB / tracking no.</label><input class="in" name="awb" value="<%= o.awb||'' %>"></div></div>
+  <div class="fg"><label>Internal notes (private)</label><textarea class="in" name="admin_notes"><%= o.admin_notes||'' %></textarea></div><button class="btn">Save changes</button></form>
+</div>
+<%- include('_foot') %>

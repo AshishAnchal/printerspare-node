@@ -1,0 +1,28 @@
+<%- include('_head') %>
+<div class="flash info">Your homepage is a stack of sections, top to bottom. Reorder, hide, edit or add sections — changes go live immediately. <a href="/" target="_blank" style="text-decoration:underline">Open store ↗</a></div>
+<div class="grid2 wide">
+<div class="card"><h2>Sections (top → bottom)</h2>
+<% rows.forEach(s => { const t = TYPES[s.type]; %><div style="display:flex;gap:.7rem;align-items:center;padding:.65rem .5rem;border-bottom:1px solid #f1f5f9;<%= s.is_active ? '' : 'opacity:.55' %>">
+ <form method="post" action="/admin/homepage/<%= s.id %>/move"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn sec sm" name="dir" value="up">↑</button><button class="btn sec sm" name="dir" value="down">↓</button></form>
+ <div style="flex:1"><b><%= s.title %></b><br><small class="muted"><%= t ? t.label : s.type %></small></div>
+ <span class="pill <%= s.is_active?'on':'off' %>"><%= s.is_active?'visible':'hidden' %></span>
+ <div class="acts"><a class="btn sec sm" href="/admin/homepage?edit=<%= s.id %>">Edit</a>
+  <form method="post" action="/admin/homepage/<%= s.id %>/toggle"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn sec sm"><%= s.is_active?'Hide':'Show' %></button></form>
+  <form method="post" action="/admin/homepage/<%= s.id %>/duplicate"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn sec sm" title="Duplicate">⧉</button></form>
+  <form method="post" action="/admin/homepage/<%= s.id %>/delete" data-confirm="Remove this section?"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn red sm">🗑</button></form></div></div><% }) %>
+<h3>➕ Add a section</h3><div class="acts"><% Object.entries(TYPES).forEach(([k,t]) => { %><a class="btn sec sm" href="/admin/homepage?type=<%= k %>"><%= t.label %></a><% }) %></div></div>
+
+<% const curType = edit ? edit.type : newType; const T = TYPES[curType]; %>
+<% if (T) { %><form class="card" method="post" action="/admin/homepage" style="position:sticky;top:70px"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="id" value="<%= edit ? edit.id : '' %>"><input type="hidden" name="type" value="<%= curType %>">
+ <h2><%= edit ? 'Edit' : 'New' %>: <%= T.label %></h2>
+ <% if (T.note) { %><div class="flash info"><%= T.note %> <% if (curType==='hero') { %><a href="/admin/hero_slides">Hero slides →</a><% } else if (curType==='trust') { %><a href="/admin/trust_items">Trust strip →</a><% } else { %><a href="/admin/brands">Brands →</a><% } %></div><% } %>
+ <div class="fg"><label>Name (admin only)</label><input class="in" name="title" value="<%= edit ? edit.title : T.label.replace(/^\S+\s/,'') %>"></div>
+ <% T.fields.forEach(([k,label,type,def,opts]) => { const v = (edit && editCfg[k] !== undefined) ? editCfg[k] : def; %><div class="fg"><label><%= label %></label>
+  <% if (type==='select') { %><select class="in" name="<%= k %>"><% Object.entries(opts).forEach(([ok,ol]) => { %><option value="<%= ok %>" <%= v===ok?'selected':'' %>><%= ol %></option><% }) %></select>
+  <% } else if (type==='source') { %><select class="in" name="<%= k %>"><optgroup label="Smart lists"><% [['newest','Newest products'],['featured','Featured products ⭐'],['sale','On sale 🔥'],['popular','Most viewed']].forEach(([ok,ol]) => { %><option value="<%= ok %>" <%= v===ok?'selected':'' %>><%= ol %></option><% }) %></optgroup><optgroup label="From a category"><% cats.forEach(c => { %><option value="category:<%= c.slug %>" <%= v==='category:'+c.slug?'selected':'' %>><%= c.name %></option><% }) %></optgroup><optgroup label="From a brand"><% brands.forEach(c => { %><option value="brand:<%= c.name %>" <%= v==='brand:'+c.name?'selected':'' %>><%= c.name %></option><% }) %></optgroup></select>
+  <% } else if (type==='html') { %><textarea class="in code" name="<%= k %>" style="min-height:220px"><%= v %></textarea>
+  <% } else if (type==='color') { %><div class="colorfield"><input type="color" value="<%= v %>"><input class="in" type="text" name="<%= k %>" value="<%= v %>"></div>
+  <% } else { %><input class="in" type="<%= type==='number'?'number':'text' %>" name="<%= k %>" value="<%= v %>"><% } %></div><% }) %>
+ <div class="acts"><button class="btn">💾 Save section</button><a class="btn sec" href="/admin/homepage">Cancel</a></div></form><% } %>
+</div>
+<%- include('_foot') %>

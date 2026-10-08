@@ -1,0 +1,4 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title><%= S.maintenance_title %> | <%= S.store_name %></title><meta name="robots" content="noindex">
+<link rel="stylesheet" href="/css/store.css"><link rel="stylesheet" href="/theme.css?v=<%= themeVersion %>"></head><body>
+<div class="maint"><div style="max-width:520px"><div style="font-size:4.5rem"><%= S.logo_emoji %></div><h1 style="font-size:2rem;font-weight:900;margin:.4rem 0"><%= S.maintenance_title %></h1><p class="muted" style="margin-bottom:1.4rem"><%= S.maintenance_message %></p>
+<a class="btn btn-whatsapp btn-lg" href="https://wa.me/<%= String(S.whatsapp).replace(/\D/g,'') %>">💬 WhatsApp us</a><p class="muted" style="margin-top:1.2rem;font-size:.85rem">📞 <%= S.phone %> · ✉️ <%= S.email %></p></div></div></body></html>

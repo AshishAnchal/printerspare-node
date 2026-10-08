@@ -1,0 +1,29 @@
+{
+  "name": "printerspare-node",
+  "version": "2.0.0",
+  "description": "Printer Spare — customisable Node.js e-commerce store (Express + SQLite)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "seed": "node scripts/seed.js",
+    "reset": "node scripts/seed.js --reset"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "better-sqlite3": "^13.0.3",
+    "compression": "^1.8.2",
+    "cookie-parser": "^1.4.7",
+    "ejs": "^7.0.1",
+    "express": "^4.22.3",
+    "express-session": "^1.19.0",
+    "helmet": "^8.3.0",
+    "multer": "^2.4.0",
+    "nodemailer": "^10.0.16"
+  }
+}

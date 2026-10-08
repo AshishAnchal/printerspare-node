@@ -1,0 +1,6 @@
+<%- include('_head') %>
+<div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Product</th><th>Customer</th><th>Rating</th><th>Review</th><th>Status</th><th></th></tr></thead><tbody>
+<% rows.forEach(x => { %><tr><td><%= x.pname %></td><td><%= x.name %><br><small class="muted"><%= L.fmtDay(x.created_at) %></small></td><td><%- include('../partials/stars', {rating:x.rating}) %></td><td style="max-width:360px;white-space:pre-line"><%= x.comment %></td><td><span class="pill <%= x.is_approved?'on':'pending' %>"><%= x.is_approved?'published':'awaiting' %></span></td>
+<td class="acts"><form method="post" action="/admin/reviews/<%= x.id %>/approve"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn <%= x.is_approved?'sec':'grn' %> sm"><%= x.is_approved?'Unpublish':'Approve' %></button></form><form method="post" action="/admin/reviews/<%= x.id %>/delete" data-confirm="Delete review?"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn red sm">🗑</button></form></td></tr><% }) %>
+<% if (!rows.length) { %><tr><td colspan="6" class="muted" style="text-align:center;padding:2rem">No reviews yet.</td></tr><% } %></tbody></table></div></div>
+<%- include('_foot') %>

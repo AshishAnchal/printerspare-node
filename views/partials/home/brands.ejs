@@ -1,0 +1,4 @@
+<% if (sec.brands.length) { %><div class="brands-strip"><div class="container">
+  <% if (cfg.heading) { %><div class="brands-title"><%= cfg.heading %></div><% } %>
+  <div class="brands-row"><% sec.brands.forEach(b => { %><a class="brand-chip fs-<%= b.font_style %>" href="/products?brand=<%= encodeURIComponent(b.name) %>" style="color:<%= L.isColor(b.text_color)?b.text_color:'inherit' %>"><% if (b.logo) { %><img src="/uploads/misc/<%= b.logo %>" alt="<%= b.name %>"><% } else { %><%= b.name %><% } %></a><% }) %></div>
+</div></div><% } %>

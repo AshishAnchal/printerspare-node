@@ -1,0 +1,2 @@
+<aside class="dash-side"><div class="avatar"><%= user.name[0].toUpperCase() %></div><b><%= user.name %></b><div class="muted" style="font-size:.8rem;margin-bottom:1rem"><%= user.email %></div>
+<nav class="dash-menu"><a class="<%= tab==='dash'?'active':'' %>" href="/account">📊 Dashboard</a><a class="<%= tab==='orders'?'active':'' %>" href="/account/orders">📋 My Orders</a><a class="<%= tab==='profile'?'active':'' %>" href="/account/profile">⚙️ Profile</a><a href="/logout" style="color:#ef4444">🚪 Logout</a></nav></aside>

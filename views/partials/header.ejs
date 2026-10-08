@@ -1,0 +1,78 @@
+<%
+const _t = (pageTitle ? pageTitle + ' | ' : '') + S.store_name + (S.meta_title_suffix ? ' ' + S.meta_title_suffix : '');
+const _d = metaDesc || S.meta_description;
+const _og = ogImage || (S.og_image ? '/uploads/misc/' + S.og_image : '');
+const cur = query.category || '';
+const annText = String(S.ann_text||'').replace('{free_shipping}', L.money0(S.free_shipping_above)).replace('{phone}', L.esc(S.phone)).replace('{store_name}', L.esc(S.store_name));
+const waNum = String(S.whatsapp||'').replace(/\D/g,'');
+%><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title><%= _t %></title>
+<meta name="description" content="<%= _d %>">
+<meta property="og:title" content="<%= _t %>"><meta property="og:description" content="<%= _d %>"><meta property="og:type" content="website">
+<% if (_og) { %><meta property="og:image" content="<%= _og %>"><% } %>
+<% if (canonical) { %><link rel="canonical" href="<%= canonical %>"><% } %>
+<% if (S.logo_image) { %><link rel="icon" href="/uploads/misc/<%= S.logo_image %>"><% } %>
+<link rel="stylesheet" href="/css/store.css?v=2">
+<link rel="stylesheet" href="/theme.css?v=<%= themeVersion %>">
+<% if (S.ga_id) { %><script async src="https://www.googletagmanager.com/gtag/js?id=<%= S.ga_id %>"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','<%= S.ga_id %>');</script><% } %>
+<%- S.custom_head_html %>
+</head>
+<body class="card-<%= S.card_style %> hdr-<%= S.header_style %>" data-csrf="<%= csrf %>">
+
+<div class="mob-overlay" id="mobOverlay"></div>
+<aside class="mob-drawer" id="mobDrawer" aria-label="Menu">
+  <div class="mob-head"><span><%= S.logo_emoji %> <%= S.store_name %></span><button id="mobClose" aria-label="Close">✕</button></div>
+  <div class="mob-search"><form action="/products"><input name="search" placeholder="Search parts…" value="<%= query.search||'' %>"><button>🔍</button></form></div>
+  <div class="mob-sec">Menu</div>
+  <a class="mob-link" href="/">🏠 Home</a>
+  <a class="mob-link" href="/cart">🛒 Cart <% if (cartCount) { %><b style="margin-left:auto;background:var(--btn);color:var(--on-btn);border-radius:99px;padding:0 .5rem"><%= cartCount %></b><% } %></a>
+  <% if (user) { %><a class="mob-link" href="/account">👤 <%= user.name.split(' ')[0] %></a><a class="mob-link" href="/account/orders">📋 My Orders</a><a class="mob-link" href="/logout">🚪 Logout</a>
+  <% } else { %><a class="mob-link" href="/login">👤 Login / Register</a><% } %>
+  <div class="mob-sec">Shop</div>
+  <% navItems.forEach(m => { %><a class="mob-link" href="<%= m.url %>"><%= m.label %></a><% }) %>
+  <div class="mob-sec">Contact</div>
+  <a class="mob-link" href="tel:<%= S.phone.replace(/[^0-9+]/g,'') %>">📞 <%= S.phone %></a>
+  <a class="mob-link" href="https://wa.me/<%= waNum %>" target="_blank" rel="noopener">💬 WhatsApp</a>
+</aside>
+
+<% if (S.ann_enabled && annText) { %>
+<div class="ann-bar" id="annBar"><%- S.ann_link ? '<a href="'+L.esc(S.ann_link)+'">'+annText+'</a>' : annText %><% if (S.ann_dismissible) { %><button class="ann-close" onclick="this.parentElement.remove()" aria-label="Close">×</button><% } %></div>
+<% } %>
+
+<header class="site-header" id="siteHeader">
+  <div class="container hdr-inner">
+    <button class="ham" id="hamBtn" aria-label="Open menu"><span></span><span></span><span></span></button>
+    <a href="/" class="brand">
+      <span class="brand-mark <%= S.logo_shape %>"><% if (S.logo_image) { %><img src="/uploads/misc/<%= S.logo_image %>" alt="<%= S.store_name %>"><% } else { %><%= S.logo_emoji %><% } %></span>
+      <span><span class="brand-name" style="display:block"><%= S.store_name %></span><span class="brand-tag"><%= S.tagline %></span></span>
+    </a>
+    <div class="search-wrap">
+      <form action="/products" class="search-bar">
+        <% if (S.show_search_category) { %><select name="category"><option value="">All Categories</option><% navCats.forEach(c => { %><option value="<%= c.slug %>" <%= cur===c.slug?'selected':'' %>><%= c.name %></option><% }) %></select><% } %>
+        <input type="text" name="search" placeholder="<%= S.label_search_placeholder %>" value="<%= query.search||'' %>" aria-label="Search">
+        <button aria-label="Search">🔍</button>
+      </form>
+    </div>
+    <nav class="nav-right">
+      <% if (user) { %><a class="nav-btn hide-m" href="/account"><span class="ic">👤</span><%= user.name.split(' ')[0] %></a><a class="nav-btn hide-m" href="/account/orders"><span class="ic">📋</span>Orders</a>
+      <% } else { %><a class="nav-btn hide-m" href="/login"><span class="ic">👤</span>Login</a><% } %>
+      <% if (S.show_wishlist) { %><a class="nav-btn hide-m" href="/wishlist"><span class="ic">❤️</span>Wishlist</a><% } %>
+      <a class="nav-btn" href="/cart"><span class="ic">🛒</span><span class="hide-m">Cart</span><span class="badge" id="cartBadge" <%- cartCount ? '' : 'style="display:none"' %>><%= cartCount %></span></a>
+    </nav>
+  </div>
+  <% if (S.show_cat_nav && navItems.length) { %>
+  <div class="cat-nav"><div class="container cat-nav-inner">
+    <% navItems.forEach(m => { const bg = m.bg_color||''; %>
+      <a class="cat-link <%= (m.slug && m.slug===cur) ? 'active':'' %>" href="<%= m.url %>" <%- m.new_tab ? 'target="_blank" rel="noopener"' : '' %> <%- bg ? 'style="background:'+L.esc(bg)+';color:'+L.esc(m.text_color||'#fff')+'"' : '' %>><%= m.label %></a>
+    <% }) %>
+  </div></div>
+  <% } %>
+</header>
+
+<div class="alerts" id="alerts">
+  <% ['success','error','warning','info'].forEach(t => (flash[t]||[]).forEach(m => { %><div class="alert alert-<%= t %>"><%= m %><button onclick="this.parentElement.remove()">×</button></div><% })) %>
+</div>
+<main>

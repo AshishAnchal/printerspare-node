@@ -1,0 +1,35 @@
+</main>
+<% const waNum2 = String(S.whatsapp||'').replace(/\D/g,''); %>
+<footer class="footer">
+  <div class="container footer-grid">
+    <div>
+      <h3><%= S.logo_emoji %> <%= S.store_name %></h3>
+      <p><%= S.footer_about %></p>
+      <p style="margin-top:.8rem">📍 <%= S.address %><br>📞 <a href="tel:<%= S.phone.replace(/[^0-9+]/g,'') %>"><%= S.phone %></a><br>💬 <a href="https://wa.me/<%= waNum2 %>" target="_blank" rel="noopener">WhatsApp</a><br>✉️ <a href="mailto:<%= S.email %>"><%= S.email %></a></p>
+      <div class="socials">
+        <% [['facebook','f'],['instagram','ig'],['youtube','▶'],['twitter','𝕏']].forEach(([k,i]) => { if (S['social_'+k]) { %><a href="<%= S['social_'+k] %>" target="_blank" rel="noopener" aria-label="<%= k %>"><%= i %></a><% } }) %>
+        <a href="https://wa.me/<%= waNum2 %>" target="_blank" rel="noopener" style="background:#25d366" aria-label="WhatsApp">💬</a>
+      </div>
+    </div>
+    <div><h4>Our Categories</h4><ul><% navCats.forEach(c => { %><li><a href="/products?category=<%= c.slug %>"><%= c.name %></a></li><% }) %></ul></div>
+    <div><h4>Quick Links</h4><ul>
+      <% footerLinks.forEach(m => { %><li><a href="<%= m.url %>"><%= m.label %></a></li><% }) %>
+      <% footerPages.forEach(p => { %><li><a href="/page/<%= p.slug %>"><%= p.title %></a></li><% }) %>
+    </ul></div>
+    <div>
+      <% if (S.show_newsletter) { %><h4>Newsletter</h4><p>Subscribe for deals, new parts & offers.</p>
+      <form class="newsletter" method="post" action="/subscribe"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="email" name="email" required placeholder="Your email address"><button class="btn btn-yellow btn-sm">Subscribe</button></form><% } %>
+      <p style="margin-top:1rem;font-size:.8rem">🕐 <%= S.business_hours %><br><%= S.delivery_note %></p>
+    </div>
+  </div>
+  <div class="footer-bottom"><div class="container">
+    <p>&copy; <%= new Date().getFullYear() %> <%= S.store_name %> · <%= S.address %> · <%= S.footer_note %></p>
+    <div class="pay-badges"><% if (S.cod_enabled) { %><span class="pay-badge">💵 COD</span><% } %><% if (S.online_enabled) { %><span class="pay-badge">📱 UPI</span><span class="pay-badge">🏦 Netbanking</span><span class="pay-badge">💳 Cards</span><% } %></div>
+  </div></div>
+</footer>
+
+<% if (S.show_whatsapp_float) { %><a class="wa-float <%= S.whatsapp_position %>" href="https://wa.me/<%= waNum2 %>?text=<%= encodeURIComponent('Hello ' + S.store_name + '! I need help.') %>" target="_blank" rel="noopener" title="Chat on WhatsApp" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="#fff" width="30" height="30"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.39-1.48-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.21 3.07.15.2 2.1 3.2 5.08 4.49.7.3 1.26.49 1.69.62.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2-1.41.25-.7.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35M12.05 21.8a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.89-9.88a9.83 9.83 0 0 1 6.99 2.9 9.82 9.82 0 0 1 2.89 6.99c0 5.45-4.44 9.88-9.89 9.88M20.46 3.49A11.8 11.8 0 0 0 12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.9 11.9 0 0 0 5.69 1.45c6.55 0 11.89-5.34 11.89-11.89 0-3.18-1.24-6.17-3.48-8.42"/></svg></a><% } %>
+<% if (S.show_scroll_top) { %><button class="to-top" id="toTop" aria-label="Back to top">↑</button><% } %>
+<script src="/js/store.js?v=2"></script>
+<%- S.custom_body_html %>
+</body></html>

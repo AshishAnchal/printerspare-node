@@ -1,0 +1,14 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Invoice <%= o.order_number %></title><meta name="robots" content="noindex">
+<style>body{font-family:Arial,sans-serif;color:#111;max-width:780px;margin:24px auto;padding:0 18px;font-size:14px}h1{margin:0}table{width:100%;border-collapse:collapse}th,td{padding:8px;border-bottom:1px solid #ddd;text-align:left}th{background:#f3f4f6;font-size:12px;text-transform:uppercase}.r{text-align:right}.hd{display:flex;justify-content:space-between;border-bottom:3px solid <%= S.color_primary %>;padding-bottom:12px;margin-bottom:16px}.tot td{border:0;padding:4px 8px}.big td{font-size:16px;font-weight:700;border-top:2px solid #111}@media print{.np{display:none}}</style></head><body>
+<div class="np" style="text-align:right;margin-bottom:10px"><button onclick="print()">🖨 Print</button></div>
+<div class="hd"><div><h1><%= S.store_name %></h1><div><%= S.address %><br><%= S.phone %> · <%= S.email %></div></div><div class="r"><h2 style="margin:0">INVOICE</h2>#<%= o.order_number %><br><%= L.fmtDay(o.created_at) %></div></div>
+<table style="margin-bottom:16px"><tr><td style="border:0;vertical-align:top;width:50%"><b>Bill / Ship to</b><br><%= o.name %><br><%= o.address %><br><%= o.city %>, <%= o.state %> <%= o.pincode %><br>📞 <%= o.phone %><br><%= o.email %></td>
+<td style="border:0;vertical-align:top"><b>Payment</b><br><%= o.payment_method==='cod'?'Cash on Delivery':'Online (Razorpay)' %> — <%= o.payment_status %><br><b>Status</b>: <%= o.order_status %><% if (o.awb) { %><br><b>AWB</b>: <%= o.awb %> (<%= o.courier %>)<% } %></td></tr></table>
+<table><thead><tr><th>#</th><th>Item</th><th class="r">Price</th><th class="r">Qty</th><th class="r">Amount</th></tr></thead><tbody><% items.forEach((i,n) => { %><tr><td><%= n+1 %></td><td><%= i.product_name %></td><td class="r"><%= L.money(i.price) %></td><td class="r"><%= i.quantity %></td><td class="r"><%= L.money(i.total) %></td></tr><% }) %></tbody></table>
+<table class="tot" style="width:320px;margin-left:auto;margin-top:10px"><tr><td>Subtotal</td><td class="r"><%= L.money(o.subtotal) %></td></tr>
+<% if (o.discount) { %><tr><td>Discount <%= o.coupon_code ? '('+o.coupon_code+')' : '' %></td><td class="r">−<%= L.money(o.discount) %></td></tr><% } %>
+<% if (o.gst) { %><tr><td>GST</td><td class="r"><%= L.money(o.gst) %></td></tr><% } %>
+<tr><td>Shipping</td><td class="r"><%= o.shipping ? L.money(o.shipping) : 'FREE' %></td></tr>
+<% if (o.cod_fee) { %><tr><td>COD fee</td><td class="r"><%= L.money(o.cod_fee) %></td></tr><% } %>
+<tr class="big"><td>Total</td><td class="r"><%= L.money(o.total) %></td></tr></table>
+<p style="color:#6b7280;font-size:12px;margin-top:28px">Thank you for shopping with <%= S.store_name %>. This is a computer-generated invoice.</p></body></html>
